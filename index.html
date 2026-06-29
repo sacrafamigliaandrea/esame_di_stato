@@ -362,8 +362,11 @@ footer span{opacity:.7}
    Modificare SOLO questo oggetto: date, anno, nome scuola.
    ============================================================ */
 const CONFIG = {
-  annoScolastico: "2025 / 2026",
   scuola: 'Scuola Secondaria di I Grado "S.P.E. Cerioli"',
+  // Anno scolastico calcolato in automatico dalla data odierna.
+  // Rollover: dal 28 giugno scatta l'anno scolastico successivo.
+  rolloverMese: 6,    // mese del cambio (1 = gennaio ... 6 = giugno)
+  rolloverGiorno: 28, // giorno del cambio
   tappe: [
     { data:"29 gennaio",      evento:"Presentazione dell'Esame",  desc:"Vengono illustrate prove, criteri e calendario." },
     { data:"10 febbraio",     evento:"Restituzione della Mappa",  desc:"Ogni studente consegna la prima bozza della propria mappa." },
@@ -841,7 +844,20 @@ function initChecklist(){
    AVVIO
    ============================================================ */
 document.getElementById("nome-scuola").textContent = CONFIG.scuola;
-document.getElementById("anno-sc").textContent = "Anno scolastico "+CONFIG.annoScolastico;
+
+/* Anno scolastico automatico: rollover al giorno indicato in CONFIG */
+function annoScolastico(){
+  const oggi = new Date();
+  const Y = oggi.getFullYear();
+  const m = oggi.getMonth() + 1;   // 1-based
+  const d = oggi.getDate();
+  const dopoRollover = (m > CONFIG.rolloverMese) ||
+                       (m === CONFIG.rolloverMese && d >= CONFIG.rolloverGiorno);
+  const inizio = dopoRollover ? Y : Y - 1;
+  return inizio + " / " + (inizio + 1);
+}
+document.getElementById("anno-sc").textContent = "Anno scolastico " + annoScolastico();
+
 render();
 </script>
 </body>
